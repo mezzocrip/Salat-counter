@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Suivi des Prières</title>
 
-  <!-- Configuration PWA pour iOS (Mode App) -->
+  <!-- Configuration PWA pour iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Prières">
   
-  <!-- Icône SVG Data-URI pour iOS -->
   <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><circle cx='256' cy='256' r='200' fill='none' stroke='%23334155' stroke-width='8'/><path d='M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z' fill='%23fbbf24'/><polygon points='330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195' fill='%23f59e0b'/><path d='M160 380 Q 256 300 352 380 L 160 400 Z' fill='%231e293b'/></svg>">
-
-  <!-- Manifest JSON dynamique pour PWA -->
   <link rel="manifest" href='data:application/json,{"name":"Suivi des Prières","short_name":"Prières","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%230f172a%22/><circle cx=%22256%22 cy=%22256%22 r=%22200%22 fill=%22none%22 stroke=%22%23334155%22 stroke-width=%228%22/><path d=%22M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z%22 fill=%22%23fbbf24%22/><polygon points=%22330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195%22 fill=%22%23f59e0b%22/><path d=%22M160 380 Q 256 300 352 380 L 160 400 Z%22 fill=%22%231e293b%22/></svg>","sizes":"512x512","type":"image/svg+xml"}]}'>
 
   <!-- Tailwind CSS -->
@@ -23,47 +20,123 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       touch-action: manipulation;
-      padding-top: max(2rem, env(safe-area-inset-top));
-      padding-bottom: max(2rem, env(safe-area-inset-bottom));
+      padding-top: max(1.5rem, env(safe-area-inset-top));
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
     }
     @media (min-width: 768px) and (orientation: landscape) {
       .app-layout {
         display: grid;
         grid-template-columns: 320px 1fr;
         gap: 1.5rem;
-        height: calc(100vh - 4rem);
+        height: calc(100vh - 3rem);
       }
       .scrollable-content {
         overflow-y: auto;
       }
     }
+    /* Animation Secousse d'erreur iOS */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-12px); }
+      40%, 80% { transform: translateX(12px); }
+    }
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased">
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased flex items-center justify-center">
 
-  <div class="max-w-6xl mx-auto app-layout">
+  <!-- ==================== ÉCRAN 1 : ACCUEIL / SELECTION PROFIL ==================== -->
+  <div id="login-screen" class="w-full max-w-md bg-slate-800/90 backdrop-blur border border-slate-700/60 p-6 md:p-8 rounded-3xl shadow-2xl text-center">
+    <div class="text-4xl mb-3">🌙</div>
+    <h1 class="text-2xl font-bold tracking-tight text-amber-400 mb-1">Suivi des Prières</h1>
+    <p class="text-xs text-slate-400 mb-8">Choisissez votre profil pour continuer</p>
+
+    <div class="space-y-4 mb-8">
+      <button onclick="loginUser('Joyce')" class="w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all border border-slate-600 bg-slate-700/70 text-slate-100 hover:bg-amber-500 hover:border-amber-400 hover:text-slate-900 flex items-center justify-between shadow-lg group">
+        <span class="flex items-center gap-3">
+          <span class="text-2xl">👤</span> Joyce
+        </span>
+        <span id="badge-pin-Joyce" class="text-xs font-normal text-slate-400 group-hover:text-slate-900"></span>
+      </button>
+
+      <button onclick="loginUser('Terrance')" class="w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all border border-slate-600 bg-slate-700/70 text-slate-100 hover:bg-amber-500 hover:border-amber-400 hover:text-slate-900 flex items-center justify-between shadow-lg group">
+        <span class="flex items-center gap-3">
+          <span class="text-2xl">👤</span> Terrance
+        </span>
+        <span id="badge-pin-Terrance" class="text-xs font-normal text-slate-400 group-hover:text-slate-900"></span>
+      </button>
+    </div>
+
+    <button onclick="openIosLockScreen('parent')" class="text-xs bg-slate-900/60 hover:bg-slate-900 text-slate-400 hover:text-slate-200 px-4 py-2.5 rounded-xl border border-slate-700 transition-all inline-flex items-center gap-2">
+      ⚙️ Réglages Parent
+    </button>
+  </div>
+
+  <!-- ==================== ÉCRAN DE DÉVERROUILLAGE STYLE iOS ==================== -->
+  <div id="ios-lock-screen" class="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex flex-col items-center justify-between p-6 hidden">
     
-    <!-- COLONNE GAUCHE : Profils & Solde -->
+    <!-- En-tête Heure & Date iOS -->
+    <div class="text-center mt-6">
+      <div class="text-slate-400 text-xs font-medium tracking-wide uppercase" id="ios-date">Lundi 27 Juillet</div>
+      <div class="text-5xl font-extralight text-slate-100 my-2" id="ios-clock">12:00</div>
+      <div id="ios-lock-sub" class="text-sm font-medium text-amber-400 mt-2">Entrer le code PIN</div>
+    </div>
+
+    <!-- Container des puces PIN -->
+    <div id="ios-pin-box" class="flex flex-col items-center my-auto">
+      <div class="flex gap-4 my-6">
+        <div id="dot-0" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
+        <div id="dot-1" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
+        <div id="dot-2" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
+        <div id="dot-3" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
+      </div>
+      <p id="ios-error-msg" class="text-xs text-rose-400 font-medium h-4"></p>
+    </div>
+
+    <!-- Clavier Numérique Biaisé Style iPhone -->
+    <div class="w-full max-w-xs mb-6">
+      <div class="grid grid-cols-3 gap-4 mb-4 justify-items-center">
+        <button onclick="pressPin('1')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">1</button>
+        <button onclick="pressPin('2')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">2 <span class="text-[9px] text-slate-400 -mt-1">ABC</span></button>
+        <button onclick="pressPin('3')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">3 <span class="text-[9px] text-slate-400 -mt-1">DEF</span></button>
+        <button onclick="pressPin('4')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">4 <span class="text-[9px] text-slate-400 -mt-1">GHI</span></button>
+        <button onclick="pressPin('5')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">5 <span class="text-[9px] text-slate-400 -mt-1">JKL</span></button>
+        <button onclick="pressPin('6')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">6 <span class="text-[9px] text-slate-400 -mt-1">MNO</span></button>
+        <button onclick="pressPin('7')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">7 <span class="text-[9px] text-slate-400 -mt-1">PQRS</span></button>
+        <button onclick="pressPin('8')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">8 <span class="text-[9px] text-slate-400 -mt-1">TUV</span></button>
+        <button onclick="pressPin('9')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">9 <span class="text-[9px] text-slate-400 -mt-1">WXYZ</span></button>
+        <div></div>
+        <button onclick="pressPin('0')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">0</button>
+        <button onclick="clearPin()" class="w-16 h-16 flex items-center justify-center text-xs text-slate-400 font-medium active:text-slate-100">Effacer</button>
+      </div>
+
+      <div class="text-center">
+        <button onclick="closeIosLockScreen()" class="text-xs text-slate-400 hover:text-slate-200 py-2">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ÉCRAN 2 : DASHBOARD APPLICATION ==================== -->
+  <div id="app-screen" class="w-full max-w-6xl mx-auto app-layout hidden">
+    
+    <!-- COLONNE GAUCHE : Profil & Solde -->
     <div class="flex flex-col justify-between bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl mb-6 md:mb-0 shadow-xl">
       <div>
-        <h1 class="text-xl font-bold tracking-tight text-amber-400 mb-4 flex items-center gap-2">
-          🌙 Suivi des Prières
-        </h1>
-
-        <!-- Utilisateurs -->
-        <label class="block text-xs text-slate-400 uppercase font-semibold mb-2">Sélectionner l'utilisateur</label>
-        <div class="grid grid-cols-2 gap-2 mb-6">
-          <button id="btn-Joyce" onclick="switchUser('Joyce')" class="py-2.5 px-4 rounded-xl font-medium text-sm transition-all border border-slate-600 bg-slate-700 text-slate-300 hover:border-amber-400">
-            Joyce
-          </button>
-          <button id="btn-Terrance" onclick="switchUser('Terrance')" class="py-2.5 px-4 rounded-xl font-medium text-sm transition-all border border-slate-600 bg-slate-700 text-slate-300 hover:border-amber-400">
-            Terrance
+        <div class="flex justify-between items-center mb-6">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🌙</span>
+            <span id="current-user-name" class="font-bold text-lg text-amber-400"></span>
+          </div>
+          <button onclick="logout()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1.5 rounded-xl border border-slate-600 transition-all flex items-center gap-1">
+            🚪 Changer
           </button>
         </div>
 
         <!-- Solde Totale -->
         <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 mb-4">
-          <span class="text-xs text-slate-400 block mb-1">Cagnotte totale</span>
+          <span class="text-xs text-slate-400 block mb-1">Cagnotte disponible</span>
           <div class="flex items-baseline gap-1">
             <span id="user-balance" class="text-4xl font-extrabold text-emerald-400">0</span>
             <span class="text-2xl font-bold text-emerald-400">€</span>
@@ -87,9 +160,9 @@
         </div>
       </div>
 
-      <div class="mt-6 pt-4 border-t border-slate-700/50">
-        <button onclick="editBalance()" class="text-xs text-slate-400 hover:text-slate-200 underline w-full text-center">
-          Ajuster la cagnotte manuellement
+      <div class="mt-6 pt-4 border-t border-slate-700/50 text-center">
+        <button onclick="openIosLockScreen('parent')" class="text-xs text-slate-500 hover:text-slate-400">
+          ⚙️ Accès administration parent
         </button>
       </div>
     </div>
@@ -114,7 +187,6 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <h2 class="text-lg font-bold text-slate-100">Historique</h2>
           
-          <!-- Filtres de période -->
           <div class="flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 text-xs">
             <button id="filter-all" onclick="setHistoryFilter('all')" class="px-2.5 py-1 rounded-lg font-medium text-amber-400 bg-slate-800">Tout</button>
             <button id="filter-month" onclick="setHistoryFilter('month')" class="px-2.5 py-1 rounded-lg font-medium text-slate-400">Ce mois</button>
@@ -122,7 +194,6 @@
           </div>
         </div>
 
-        <!-- Récapitulatif de la période -->
         <div id="history-summary" class="grid grid-cols-2 gap-2 mb-3 text-xs bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/30">
           <div class="text-emerald-400 font-medium">Gagné : <span id="summary-gained" class="font-bold">0€</span></div>
           <div class="text-rose-400 font-medium">Dépensé : <span id="summary-spent" class="font-bold">0€</span></div>
@@ -162,39 +233,189 @@
       { id: "isha", name: "Isha", icon: "🌙" }
     ];
 
-    let currentUser = "Joyce";
-    let currentFilter = "all"; // 'all', 'month', 'year'
+    const MASTER_PIN = "0941";
+    let currentUser = null;
+    let currentFilter = "all";
+    
+    let pinTarget = null; // 'parent', 'Joyce', ou 'Terrance'
+    let currentEnteredPin = "";
+
     let userData = {
-      Joyce: { balance: 36, history: {}, currentDay: {} },
-      Terrance: { balance: 0, history: {}, currentDay: {} }
+      Joyce: { balance: 36, pin: "", history: {}, currentDay: {} },
+      Terrance: { balance: 0, pin: "", history: {}, currentDay: {} }
     };
 
     const todayObj = new Date();
     const todayStr = todayObj.toISOString().split('T')[0];
-    const currentMonthStr = todayStr.substring(0, 7); // YYYY-MM
-    const currentYearStr = todayStr.substring(0, 4);  // YYYY
+    const currentMonthStr = todayStr.substring(0, 7);
+    const currentYearStr = todayStr.substring(0, 4);
 
     document.getElementById("current-date").textContent = todayObj.toLocaleDateString('fr-FR', {
       weekday: 'long', day: 'numeric', month: 'long'
     });
 
+    // Horloge dynamique iOS
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("ios-clock").textContent = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById("ios-date").textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
     const usersRef = ref(db, 'users');
     onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        if (data.Joyce) userData.Joyce = data.Joyce;
-        if (data.Terrance) userData.Terrance = data.Terrance;
+        if (data.Joyce) userData.Joyce = { ...userData.Joyce, ...data.Joyce };
+        if (data.Terrance) userData.Terrance = { ...userData.Terrance, ...data.Terrance };
       } else {
-        set(ref(db, 'users/Joyce/balance'), 36);
-        set(ref(db, 'users/Terrance/balance'), 0);
+        set(ref(db, 'users/Joyce'), userData.Joyce);
+        set(ref(db, 'users/Terrance'), userData.Terrance);
       }
-      renderUI();
+      updateLoginBadges();
+      if (currentUser) renderUI();
     });
 
-    window.switchUser = function(user) {
-      currentUser = user;
-      renderUI();
+    function updateLoginBadges() {
+      document.getElementById("badge-pin-Joyce").textContent = (userData.Joyce.pin && userData.Joyce.pin !== "") ? "🔒 Protegé" : "🔓 Libre d'accès";
+      document.getElementById("badge-pin-Terrance").textContent = (userData.Terrance.pin && userData.Terrance.pin !== "") ? "🔒 Protegé" : "🔓 Libre d'accès";
+    }
+
+    // Ouvrir l'écran de verrouillage iOS
+    window.openIosLockScreen = function(target) {
+      pinTarget = target;
+      currentEnteredPin = "";
+      document.getElementById("ios-error-msg").textContent = "";
+      updateDots();
+
+      const subEl = document.getElementById("ios-lock-sub");
+      if (target === 'parent') {
+        subEl.textContent = "Code Administrateur Parent";
+      } else {
+        subEl.textContent = `Entrez le code pour ${target}`;
+      }
+
+      document.getElementById("ios-lock-screen").classList.remove("hidden");
     };
+
+    window.closeIosLockScreen = function() {
+      document.getElementById("ios-lock-screen").classList.add("hidden");
+      currentEnteredPin = "";
+    };
+
+    window.pressPin = function(digit) {
+      if (currentEnteredPin.length < 4) {
+        currentEnteredPin += digit;
+        updateDots();
+        if (currentEnteredPin.length === 4) {
+          setTimeout(validatePin, 100);
+        }
+      }
+    };
+
+    window.clearPin = function() {
+      if (currentEnteredPin.length > 0) {
+        currentEnteredPin = currentEnteredPin.slice(0, -1);
+        updateDots();
+      }
+    };
+
+    function updateDots() {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i < currentEnteredPin.length) {
+          dot.className = "w-4 h-4 rounded-full border-2 border-amber-400 bg-amber-400 shadow-md shadow-amber-400/50 transition-all duration-200 scale-110";
+        } else {
+          dot.className = "w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200";
+        }
+      }
+    }
+
+    function validatePin() {
+      let isValid = false;
+
+      if (pinTarget === 'parent') {
+        isValid = (currentEnteredPin === MASTER_PIN);
+      } else {
+        const userPin = userData[pinTarget]?.pin;
+        isValid = (currentEnteredPin === userPin || currentEnteredPin === MASTER_PIN);
+      }
+
+      if (isValid) {
+        if (pinTarget === 'parent') {
+          closeIosLockScreen();
+          openSettingsMenu();
+        } else {
+          currentUser = pinTarget;
+          closeIosLockScreen();
+          showAppScreen();
+        }
+      } else {
+        // En cas d'erreur : Animation Secousse + Message + Retour Login
+        const pinBox = document.getElementById("ios-pin-box");
+        document.getElementById("ios-error-msg").textContent = "Code PIN incorrect";
+        pinBox.classList.add("shake");
+
+        setTimeout(() => {
+          pinBox.classList.remove("shake");
+          closeIosLockScreen(); // Retourne au Login
+        }, 800);
+      }
+    }
+
+    window.loginUser = function(user) {
+      const userPin = userData[user]?.pin;
+      if (!userPin || userPin.trim() === "") {
+        currentUser = user;
+        showAppScreen();
+      } else {
+        openIosLockScreen(user);
+      }
+    };
+
+    window.logout = function() {
+      currentUser = null;
+      document.getElementById("app-screen").classList.add("hidden");
+      document.getElementById("login-screen").classList.remove("hidden");
+    };
+
+    function showAppScreen() {
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("app-screen").classList.remove("hidden");
+      renderUI();
+    }
+
+    function openSettingsMenu() {
+      const choice = prompt(
+        "--- RÉGLAGES PARENT ---\n\n" +
+        "1. Définir/Modifier le code PIN de Joyce\n" +
+        "2. Définir/Modifier le code PIN de Terrance\n" +
+        "3. Ajuster la cagnotte de Joyce\n" +
+        "4. Ajuster la cagnotte de Terrance\n\n" +
+        "Entrez le numéro de votre choix (1, 2, 3 ou 4) :"
+      );
+
+      if (choice === "1") {
+        const newPin = prompt("Nouveau code PIN (4 chiffres) pour Joyce (Laissez vide pour supprimer) :", userData.Joyce.pin || "");
+        if (newPin !== null) {
+          set(ref(db, 'users/Joyce/pin'), newPin.trim());
+          alert(newPin.trim() === "" ? "Code PIN supprimé." : "Code PIN mis à jour !");
+        }
+      } else if (choice === "2") {
+        const newPin = prompt("Nouveau code PIN (4 chiffres) pour Terrance (Laissez vide pour supprimer) :", userData.Terrance.pin || "");
+        if (newPin !== null) {
+          set(ref(db, 'users/Terrance/pin'), newPin.trim());
+          alert(newPin.trim() === "" ? "Code PIN supprimé." : "Code PIN mis à jour !");
+        }
+      } else if (choice === "3") {
+        const newBal = prompt("Ajuster la cagnotte de Joyce (€) :", userData.Joyce.balance || 0);
+        if (newBal !== null && !isNaN(newBal)) set(ref(db, 'users/Joyce/balance'), parseInt(newBal, 10));
+      } else if (choice === "4") {
+        const newBal = prompt("Ajuster la cagnotte de Terrance (€) :", userData.Terrance.balance || 0);
+        if (newBal !== null && !isNaN(newBal)) set(ref(db, 'users/Terrance/balance'), parseInt(newBal, 10));
+      }
+    }
 
     window.setHistoryFilter = function(filter) {
       currentFilter = filter;
@@ -257,17 +478,10 @@
       update(ref(db), updates);
     };
 
-    window.editBalance = function() {
-      const current = userData[currentUser]?.balance || 0;
-      const val = prompt(`Ajuster la cagnotte de ${currentUser} (€) :`, current);
-      if (val !== null && !isNaN(val)) {
-        set(ref(db, `users/${currentUser}/balance`), parseInt(val, 10));
-      }
-    };
-
     function renderUI() {
-      document.getElementById("btn-Joyce").className = `py-2.5 px-4 rounded-xl font-medium text-sm transition-all border ${currentUser === 'Joyce' ? 'bg-amber-500 border-amber-400 text-slate-900 font-bold shadow-lg shadow-amber-500/20' : 'bg-slate-700/60 border-slate-600 text-slate-300'}`;
-      document.getElementById("btn-Terrance").className = `py-2.5 px-4 rounded-xl font-medium text-sm transition-all border ${currentUser === 'Terrance' ? 'bg-amber-500 border-amber-400 text-slate-900 font-bold shadow-lg shadow-amber-500/20' : 'bg-slate-700/60 border-slate-600 text-slate-300'}`;
+      if (!currentUser) return;
+
+      document.getElementById("current-user-name").textContent = currentUser;
 
       const balance = userData[currentUser]?.balance || 0;
       document.getElementById("user-balance").textContent = balance;
@@ -311,7 +525,6 @@
       document.getElementById("progress-bar").style.width = `${percent}%`;
       document.getElementById("progress-text").textContent = `${count}/5 (${count}€)`;
 
-      // Boutons filtre style
       ['all', 'month', 'year'].forEach(f => {
         const btn = document.getElementById(`filter-${f}`);
         if (f === currentFilter) {
@@ -321,7 +534,6 @@
         }
       });
 
-      // Gestion Historique
       const historyContainer = document.getElementById("history-list");
       const historyObj = userData[currentUser]?.history || {};
       const historyKeys = Object.keys(historyObj).sort().reverse();
@@ -332,26 +544,22 @@
 
       historyKeys.forEach(k => {
         const item = historyObj[k];
-        // Support anciens items (texte) et nouveaux items (objet)
         const isObj = typeof item === 'object';
         const text = isObj ? item.text : item;
         const itemDate = isObj ? item.date : (text.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '');
         const isExpense = isObj ? item.type === 'expense' : (text.includes('🛒') || text.includes('(-'));
 
-        // Filtres
         let keep = true;
         if (currentFilter === 'month' && !itemDate.startsWith(currentMonthStr)) keep = false;
         if (currentFilter === 'year' && !itemDate.startsWith(currentYearStr)) keep = false;
 
         if (keep) {
           filteredItems.push({ text, isExpense });
-
-          // Calculs totaux
           if (isObj) {
             if (item.type === 'expense') totalSpent += item.amount;
             else totalGained += item.amount;
           } else {
-            if (isExpense) totalSpent += 1; // approximation ancien format
+            if (isExpense) totalSpent += 1;
             else totalGained += 1;
           }
         }
