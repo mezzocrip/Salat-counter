@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Suivi des Prières</title>
 
-  <!-- Configuration PWA pour iOS 18 (Raccourci écran d'accueil -> Mode App) -->
+  <!-- Configuration PWA pour iOS (Mode App) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Prières">
   
-  <!-- Icône personnalisée générée en SVG Data-URI pour iOS & Safari -->
+  <!-- Icône personnalisée SVG Data-URI pour iOS & Safari -->
   <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><circle cx='256' cy='256' r='200' fill='none' stroke='%23334155' stroke-width='8'/><path d='M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z' fill='%23fbbf24'/><polygon points='330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195' fill='%23f59e0b'/><path d='M160 380 Q 256 300 352 380 L 352 400 L 160 400 Z' fill='%231e293b'/></svg>">
 
   <!-- Manifest JSON dynamique pour PWA -->
@@ -23,6 +23,9 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       touch-action: manipulation;
+      /* Gestion explicite de la zone haute sécurisée pour iOS (Dynamic Island / Encoche) */
+      padding-top: max(2rem, env(safe-area-inset-top));
+      padding-bottom: max(2rem, env(safe-area-inset-bottom));
     }
     /* Layout iPad Paysage */
     @media (min-width: 768px) and (orientation: landscape) {
@@ -30,7 +33,7 @@
         display: grid;
         grid-template-columns: 320px 1fr;
         gap: 1.5rem;
-        height: calc(100vh - 2rem);
+        height: calc(100vh - 4rem);
       }
       .scrollable-content {
         overflow-y: auto;
@@ -38,7 +41,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased pt-12 pb-8">
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased">
 
   <div class="max-w-6xl mx-auto app-layout">
     
