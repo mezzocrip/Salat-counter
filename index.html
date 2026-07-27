@@ -9,10 +9,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Prières">
-  <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/192/000000/star-and-crescent.png">
+  
+  <!-- Icône personnalisée générée en SVG Data-URI pour iOS & Safari -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><circle cx='256' cy='256' r='200' fill='none' stroke='%23334155' stroke-width='8'/><path d='M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z' fill='%23fbbf24'/><polygon points='330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195' fill='%23f59e0b'/><path d='M160 380 Q 256 300 352 380 L 352 400 L 160 400 Z' fill='%231e293b'/></svg>">
 
-  <!-- Manifest JSON dynamique -->
-  <link rel="manifest" href='data:application/json,{"name":"Suivi des Prières","short_name":"Prières","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://img.icons8.com/emoji/192/000000/star-and-crescent.png","sizes":"192x192","type":"image/png"}]}'>
+  <!-- Manifest JSON dynamique pour PWA -->
+  <link rel="manifest" href='data:application/json,{"name":"Suivi des Prières","short_name":"Prières","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%230f172a%22/><circle cx=%22256%22 cy=%22256%22 r=%22200%22 fill=%22none%22 stroke=%22%23334155%22 stroke-width=%228%22/><path d=%22M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z%22 fill=%22%23fbbf24%22/><polygon points=%22330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195%22 fill=%22%23f59e0b%22/><path d=%22M160 380 Q 256 300 352 380 L 352 400 L 160 400 Z%22 fill=%22%231e293b%22/></svg>","sizes":"512x512","type":"image/svg+xml"}]}'>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,9 +22,9 @@
     body {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      touch-action: manipulation; /* Désactive le délai de double-tap zoom sur les navigateurs tactiles */
+      touch-action: manipulation;
     }
-    /* Dynamic Layout pour iPad en Paysage */
+    /* Layout iPad Paysage */
     @media (min-width: 768px) and (orientation: landscape) {
       .app-layout {
         display: grid;
@@ -112,7 +114,7 @@
     </div>
   </div>
 
-  <!-- FIREBASE CONFIGURÉ DIRECTEMENT AVEC TES CLÉS -->
+  <!-- FIREBASE CONFIGURÉ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -150,7 +152,6 @@
       weekday: 'long', day: 'numeric', month: 'long'
     });
 
-    // Écoute en temps réel
     const usersRef = ref(db, 'users');
     onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
@@ -211,7 +212,7 @@
 
       let count = 0;
 
-      PRAYERS.exportsEach ? null : PRAYERS.forEach(p => {
+      PRAYERS.forEach(p => {
         const done = !!todayPrayers[p.id];
         if (done) count++;
 
