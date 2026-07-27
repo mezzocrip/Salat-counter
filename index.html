@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Suivi des Prières</title>
 
-  <!-- Configuration PWA pour iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Prières">
@@ -13,7 +12,6 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><circle cx='256' cy='256' r='200' fill='none' stroke='%23334155' stroke-width='8'/><path d='M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z' fill='%23fbbf24'/><polygon points='330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195' fill='%23f59e0b'/><path d='M160 380 Q 256 300 352 380 L 160 400 Z' fill='%231e293b'/></svg>">
   <link rel="manifest" href='data:application/json,{"name":"Suivi des Prières","short_name":"Prières","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%230f172a%22/><circle cx=%22256%22 cy=%22256%22 r=%22200%22 fill=%22none%22 stroke=%22%23334155%22 stroke-width=%228%22/><path d=%22M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z%22 fill=%22%23fbbf24%22/><polygon points=%22330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195%22 fill=%22%23f59e0b%22/><path d=%22M160 380 Q 256 300 352 380 L 160 400 Z%22 fill=%22%231e293b%22/></svg>","sizes":"512x512","type":"image/svg+xml"}]}'>
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -47,7 +45,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased flex items-center justify-center">
 
-  <!-- ==================== ÉCRAN 1 : LOGIN / SELECTION PROFIL ==================== -->
   <div id="login-screen" class="w-full max-w-md bg-slate-800/90 backdrop-blur border border-slate-700/60 p-6 md:p-8 rounded-3xl shadow-2xl text-center">
     <div class="text-4xl mb-3">🌙</div>
     <h1 class="text-2xl font-bold tracking-tight text-amber-400 mb-1">Suivi des Prières</h1>
@@ -74,14 +71,12 @@
     </button>
   </div>
 
-  <!-- ==================== MODALE PAVÉ NUMÉRIQUE COMPACT ==================== -->
   <div id="pin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div id="pin-card" class="bg-[#1c222b] border border-slate-800 p-6 md:p-8 rounded-[32px] w-full max-w-[320px] text-center shadow-2xl">
       
       <h3 id="pin-modal-title" class="text-lg font-bold text-slate-100 mb-1">Code PIN requis</h3>
       <p id="pin-modal-sub" class="text-xs text-slate-400 mb-6">Saisissez votre code à 4 chiffres</p>
       
-      <!-- Les 4 Puces PIN -->
       <div class="flex justify-center gap-4 mb-2">
         <div id="dot-0" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
         <div id="dot-1" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
@@ -91,7 +86,6 @@
 
       <p id="pin-error-msg" class="text-xs text-rose-400 font-medium h-6 mb-2"></p>
 
-      <!-- Clavier Numérique -->
       <div class="grid grid-cols-3 gap-3 justify-items-center">
         <button onclick="pressPin('1')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">1</button>
         <button onclick="pressPin('2')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">2</button>
@@ -103,7 +97,6 @@
         <button onclick="pressPin('8')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">8</button>
         <button onclick="pressPin('9')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">9</button>
         
-        <!-- Ligne du bas : Annuler / 0 / Effacer -->
         <button onclick="closePinModal()" class="w-16 h-16 flex items-center justify-center text-sm font-medium text-rose-500 active:opacity-70">Annuler</button>
         <button onclick="pressPin('0')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">0</button>
         <button onclick="clearPin()" class="w-16 h-16 flex items-center justify-center text-xl text-slate-400 active:text-slate-100">⌫</button>
@@ -112,10 +105,8 @@
     </div>
   </div>
 
-  <!-- ==================== ÉCRAN 2 : DASHBOARD APPLICATION ==================== -->
   <div id="app-screen" class="w-full max-w-6xl mx-auto app-layout hidden">
     
-    <!-- COLONNE GAUCHE : Profil & Solde -->
     <div class="flex flex-col justify-between bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl mb-6 md:mb-0 shadow-xl">
       <div>
         <div class="flex justify-between items-center mb-6">
@@ -128,7 +119,6 @@
           </button>
         </div>
 
-        <!-- Solde Totale -->
         <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 mb-4">
           <span class="text-xs text-slate-400 block mb-1">Cagnotte disponible</span>
           <div class="flex items-baseline gap-1">
@@ -137,12 +127,16 @@
           </div>
         </div>
 
-        <!-- Bouton Dépense -->
-        <button onclick="addExpense()" class="w-full mb-4 py-3 px-4 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-500/10">
-          🛒 Enregistrer une dépense
-        </button>
+        <div class="space-y-2 mb-4">
+          <button onclick="addExpense()" class="w-full py-3 px-4 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-500/10">
+            🛒 Enregistrer une dépense
+          </button>
 
-        <!-- Barre de progression -->
+          <button onclick="openPinModal('tip')" class="w-full py-3 px-4 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10">
+            🎁 Donner un tips / Argent de poche
+          </button>
+        </div>
+
         <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
           <div class="flex justify-between text-xs mb-2">
             <span class="text-slate-400">Progression aujourd'hui</span>
@@ -161,10 +155,8 @@
       </div>
     </div>
 
-    <!-- COLONNE DROITE : Prières du jour + Historique -->
     <div class="scrollable-content space-y-6">
       
-      <!-- Liste des prières -->
       <div class="bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl shadow-xl">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-bold text-slate-100">Prières du jour</h2>
@@ -172,11 +164,9 @@
         </div>
 
         <div id="prayers-list" class="space-y-3">
-          <!-- Généré en JS -->
-        </div>
+          </div>
       </div>
 
-      <!-- Historique avec filtres Mois / Année -->
       <div class="bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl shadow-xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <h2 class="text-lg font-bold text-slate-100">Historique</h2>
@@ -201,7 +191,6 @@
     </div>
   </div>
 
-  <!-- FIREBASE CONFIGURÉ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -275,7 +264,7 @@
       updateDots();
 
       const subEl = document.getElementById("pin-modal-sub");
-      if (target === 'parent') {
+      if (target === 'parent' || target === 'tip') {
         subEl.textContent = "Code Administrateur Parent";
       } else {
         subEl.textContent = `Saisissez le code pour ${target}`;
@@ -320,7 +309,7 @@
     function validatePin() {
       let isValid = false;
 
-      if (pinTarget === 'parent') {
+      if (pinTarget === 'parent' || pinTarget === 'tip') {
         isValid = (currentEnteredPin === MASTER_PIN);
       } else {
         const userPin = userData[pinTarget]?.pin;
@@ -331,18 +320,19 @@
         if (pinTarget === 'parent') {
           closePinModal();
           openSettingsMenu();
+        } else if (pinTarget === 'tip') {
+          closePinModal();
+          addTip();
         } else {
           currentUser = pinTarget;
           closePinModal();
           showAppScreen();
         }
       } else {
-        // En cas d'erreur : Secousse + Message + Réinitialisation des puces (Reste OUVERT)
         const card = document.getElementById("pin-card");
         document.getElementById("pin-error-msg").textContent = "Code PIN incorrect";
         card.classList.add("shake");
 
-        // Réinitialiser la saisie pour qu'ils puissent retaper directement
         currentEnteredPin = "";
         updateDots();
 
@@ -466,6 +456,33 @@
       update(ref(db), updates);
     };
 
+    // FONCTION POUR AJOUTER UN DON / TIPS / ARGENT DE POCHE
+    function addTip() {
+      const amountStr = prompt(`Montant du don / argent de poche pour ${currentUser} (€) :`);
+      if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) return;
+
+      const amount = parseFloat(amountStr);
+      const reason = prompt("Raison du don (ex: Argent de poche, Cadeau, Aide...) :") || "Don / Tips";
+      const currentBalance = userData[currentUser]?.balance || 0;
+      const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const newBalance = currentBalance + amount;
+
+      const userRefPath = `users/${currentUser}`;
+      const historyKey = Date.now();
+
+      const updates = {};
+      updates[`${userRefPath}/balance`] = newBalance;
+      updates[`${userRefPath}/history/${historyKey}`] = {
+        text: `🎁 ${todayStr} à ${timestamp} : ${reason} (+${amount}€)`,
+        date: todayStr,
+        type: 'gain',
+        amount: amount
+      };
+
+      update(ref(db), updates);
+      alert(`+${amount}€ ajoutés avec succès à la cagnotte de ${currentUser} !`);
+    }
+
     function renderUI() {
       if (!currentUser) return;
 
@@ -560,7 +577,7 @@
         historyContainer.innerHTML = `<p class="text-xs italic text-slate-500 py-2">Aucune activité enregistrée pour cette période.</p>`;
       } else {
         historyContainer.innerHTML = filteredItems.map(item => `
-          <div class="py-1.5 border-b border-slate-700/40 flex justify-between items-center text-xs ${item.isExpense ? 'text-rose-300' : 'text-slate-300'}">
+          <div class="py-1.5 border-b border-slate-700/40 flex justify-between items-center text-xs ${item.isExpense ? 'text-rose-300' : 'text-emerald-300'}">
             <span>${item.text}</span>
           </div>
         `).join('');
