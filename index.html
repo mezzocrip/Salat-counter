@@ -34,20 +34,20 @@
         overflow-y: auto;
       }
     }
-    /* Animation Secousse d'erreur iOS */
+    /* Animation Secousse d'erreur */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-12px); }
-      40%, 80% { transform: translateX(12px); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
     }
     .shake {
-      animation: shake 0.4s ease-in-out;
+      animation: shake 0.35s ease-in-out;
     }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased flex items-center justify-center">
 
-  <!-- ==================== ÉCRAN 1 : ACCUEIL / SELECTION PROFIL ==================== -->
+  <!-- ==================== ÉCRAN 1 : LOGIN / SELECTION PROFIL ==================== -->
   <div id="login-screen" class="w-full max-w-md bg-slate-800/90 backdrop-blur border border-slate-700/60 p-6 md:p-8 rounded-3xl shadow-2xl text-center">
     <div class="text-4xl mb-3">🌙</div>
     <h1 class="text-2xl font-bold tracking-tight text-amber-400 mb-1">Suivi des Prières</h1>
@@ -69,52 +69,46 @@
       </button>
     </div>
 
-    <button onclick="openIosLockScreen('parent')" class="text-xs bg-slate-900/60 hover:bg-slate-900 text-slate-400 hover:text-slate-200 px-4 py-2.5 rounded-xl border border-slate-700 transition-all inline-flex items-center gap-2">
+    <button onclick="openPinModal('parent')" class="text-xs bg-slate-900/60 hover:bg-slate-900 text-slate-400 hover:text-slate-200 px-4 py-2.5 rounded-xl border border-slate-700 transition-all inline-flex items-center gap-2">
       ⚙️ Réglages Parent
     </button>
   </div>
 
-  <!-- ==================== ÉCRAN DE DÉVERROUILLAGE STYLE iOS ==================== -->
-  <div id="ios-lock-screen" class="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex flex-col items-center justify-between p-6 hidden">
-    
-    <!-- En-tête Heure & Date iOS -->
-    <div class="text-center mt-6">
-      <div class="text-slate-400 text-xs font-medium tracking-wide uppercase" id="ios-date">Lundi 27 Juillet</div>
-      <div class="text-5xl font-extralight text-slate-100 my-2" id="ios-clock">12:00</div>
-      <div id="ios-lock-sub" class="text-sm font-medium text-amber-400 mt-2">Entrer le code PIN</div>
-    </div>
-
-    <!-- Container des puces PIN -->
-    <div id="ios-pin-box" class="flex flex-col items-center my-auto">
-      <div class="flex gap-4 my-6">
-        <div id="dot-0" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
-        <div id="dot-1" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
-        <div id="dot-2" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
-        <div id="dot-3" class="w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200"></div>
-      </div>
-      <p id="ios-error-msg" class="text-xs text-rose-400 font-medium h-4"></p>
-    </div>
-
-    <!-- Clavier Numérique Biaisé Style iPhone -->
-    <div class="w-full max-w-xs mb-6">
-      <div class="grid grid-cols-3 gap-4 mb-4 justify-items-center">
-        <button onclick="pressPin('1')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">1</button>
-        <button onclick="pressPin('2')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">2 <span class="text-[9px] text-slate-400 -mt-1">ABC</span></button>
-        <button onclick="pressPin('3')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">3 <span class="text-[9px] text-slate-400 -mt-1">DEF</span></button>
-        <button onclick="pressPin('4')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">4 <span class="text-[9px] text-slate-400 -mt-1">GHI</span></button>
-        <button onclick="pressPin('5')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">5 <span class="text-[9px] text-slate-400 -mt-1">JKL</span></button>
-        <button onclick="pressPin('6')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">6 <span class="text-[9px] text-slate-400 -mt-1">MNO</span></button>
-        <button onclick="pressPin('7')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">7 <span class="text-[9px] text-slate-400 -mt-1">PQRS</span></button>
-        <button onclick="pressPin('8')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">8 <span class="text-[9px] text-slate-400 -mt-1">TUV</span></button>
-        <button onclick="pressPin('9')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">9 <span class="text-[9px] text-slate-400 -mt-1">WXYZ</span></button>
-        <div></div>
-        <button onclick="pressPin('0')" class="w-16 h-16 rounded-full bg-slate-800/80 active:bg-slate-600 border border-slate-700/50 flex flex-col items-center justify-center text-xl font-medium transition-all">0</button>
-        <button onclick="clearPin()" class="w-16 h-16 flex items-center justify-center text-xs text-slate-400 font-medium active:text-slate-100">Effacer</button>
+  <!-- ==================== MODALE PAVÉ NUMÉRIQUE COMPACT ==================== -->
+  <div id="pin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div id="pin-card" class="bg-[#1c222b] border border-slate-800 p-6 md:p-8 rounded-[32px] w-full max-w-[320px] text-center shadow-2xl">
+      
+      <h3 id="pin-modal-title" class="text-lg font-bold text-slate-100 mb-1">Code PIN requis</h3>
+      <p id="pin-modal-sub" class="text-xs text-slate-400 mb-6">Saisissez votre code à 4 chiffres</p>
+      
+      <!-- Les 4 Puces PIN -->
+      <div class="flex justify-center gap-4 mb-2">
+        <div id="dot-0" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
+        <div id="dot-1" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
+        <div id="dot-2" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
+        <div id="dot-3" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
       </div>
 
-      <div class="text-center">
-        <button onclick="closeIosLockScreen()" class="text-xs text-slate-400 hover:text-slate-200 py-2">Annuler</button>
+      <p id="pin-error-msg" class="text-xs text-rose-400 font-medium h-6 mb-2"></p>
+
+      <!-- Clavier Numérique -->
+      <div class="grid grid-cols-3 gap-3 justify-items-center">
+        <button onclick="pressPin('1')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">1</button>
+        <button onclick="pressPin('2')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">2</button>
+        <button onclick="pressPin('3')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">3</button>
+        <button onclick="pressPin('4')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">4</button>
+        <button onclick="pressPin('5')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">5</button>
+        <button onclick="pressPin('6')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">6</button>
+        <button onclick="pressPin('7')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">7</button>
+        <button onclick="pressPin('8')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">8</button>
+        <button onclick="pressPin('9')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">9</button>
+        
+        <!-- Ligne du bas : Annuler / 0 / Effacer -->
+        <button onclick="closePinModal()" class="w-16 h-16 flex items-center justify-center text-sm font-medium text-rose-500 active:opacity-70">Annuler</button>
+        <button onclick="pressPin('0')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">0</button>
+        <button onclick="clearPin()" class="w-16 h-16 flex items-center justify-center text-xl text-slate-400 active:text-slate-100">⌫</button>
       </div>
+
     </div>
   </div>
 
@@ -161,7 +155,7 @@
       </div>
 
       <div class="mt-6 pt-4 border-t border-slate-700/50 text-center">
-        <button onclick="openIosLockScreen('parent')" class="text-xs text-slate-500 hover:text-slate-400">
+        <button onclick="openPinModal('parent')" class="text-xs text-slate-500 hover:text-slate-400">
           ⚙️ Accès administration parent
         </button>
       </div>
@@ -237,7 +231,7 @@
     let currentUser = null;
     let currentFilter = "all";
     
-    let pinTarget = null; // 'parent', 'Joyce', ou 'Terrance'
+    let pinTarget = null;
     let currentEnteredPin = "";
 
     let userData = {
@@ -253,15 +247,6 @@
     document.getElementById("current-date").textContent = todayObj.toLocaleDateString('fr-FR', {
       weekday: 'long', day: 'numeric', month: 'long'
     });
-
-    // Horloge dynamique iOS
-    function updateClock() {
-      const now = new Date();
-      document.getElementById("ios-clock").textContent = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      document.getElementById("ios-date").textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
 
     const usersRef = ref(db, 'users');
     onValue(usersRef, (snapshot) => {
@@ -282,25 +267,25 @@
       document.getElementById("badge-pin-Terrance").textContent = (userData.Terrance.pin && userData.Terrance.pin !== "") ? "🔒 Protegé" : "🔓 Libre d'accès";
     }
 
-    // Ouvrir l'écran de verrouillage iOS
-    window.openIosLockScreen = function(target) {
+    // Gestion de la modale PIN
+    window.openPinModal = function(target) {
       pinTarget = target;
       currentEnteredPin = "";
-      document.getElementById("ios-error-msg").textContent = "";
+      document.getElementById("pin-error-msg").textContent = "";
       updateDots();
 
-      const subEl = document.getElementById("ios-lock-sub");
+      const subEl = document.getElementById("pin-modal-sub");
       if (target === 'parent') {
         subEl.textContent = "Code Administrateur Parent";
       } else {
-        subEl.textContent = `Entrez le code pour ${target}`;
+        subEl.textContent = `Saisissez le code pour ${target}`;
       }
 
-      document.getElementById("ios-lock-screen").classList.remove("hidden");
+      document.getElementById("pin-modal").classList.remove("hidden");
     };
 
-    window.closeIosLockScreen = function() {
-      document.getElementById("ios-lock-screen").classList.add("hidden");
+    window.closePinModal = function() {
+      document.getElementById("pin-modal").classList.add("hidden");
       currentEnteredPin = "";
     };
 
@@ -309,7 +294,7 @@
         currentEnteredPin += digit;
         updateDots();
         if (currentEnteredPin.length === 4) {
-          setTimeout(validatePin, 100);
+          setTimeout(validatePin, 80);
         }
       }
     };
@@ -325,9 +310,9 @@
       for (let i = 0; i < 4; i++) {
         const dot = document.getElementById(`dot-${i}`);
         if (i < currentEnteredPin.length) {
-          dot.className = "w-4 h-4 rounded-full border-2 border-amber-400 bg-amber-400 shadow-md shadow-amber-400/50 transition-all duration-200 scale-110";
+          dot.className = "w-3.5 h-3.5 rounded-full border border-amber-400 bg-amber-400 shadow-sm shadow-amber-400/50 transition-all scale-110";
         } else {
-          dot.className = "w-4 h-4 rounded-full border-2 border-slate-400 transition-all duration-200";
+          dot.className = "w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all";
         }
       }
     }
@@ -344,23 +329,26 @@
 
       if (isValid) {
         if (pinTarget === 'parent') {
-          closeIosLockScreen();
+          closePinModal();
           openSettingsMenu();
         } else {
           currentUser = pinTarget;
-          closeIosLockScreen();
+          closePinModal();
           showAppScreen();
         }
       } else {
-        // En cas d'erreur : Animation Secousse + Message + Retour Login
-        const pinBox = document.getElementById("ios-pin-box");
-        document.getElementById("ios-error-msg").textContent = "Code PIN incorrect";
-        pinBox.classList.add("shake");
+        // En cas d'erreur : Secousse + Message + Réinitialisation des puces (Reste OUVERT)
+        const card = document.getElementById("pin-card");
+        document.getElementById("pin-error-msg").textContent = "Code PIN incorrect";
+        card.classList.add("shake");
+
+        // Réinitialiser la saisie pour qu'ils puissent retaper directement
+        currentEnteredPin = "";
+        updateDots();
 
         setTimeout(() => {
-          pinBox.classList.remove("shake");
-          closeIosLockScreen(); // Retourne au Login
-        }, 800);
+          card.classList.remove("shake");
+        }, 400);
       }
     }
 
@@ -370,7 +358,7 @@
         currentUser = user;
         showAppScreen();
       } else {
-        openIosLockScreen(user);
+        openPinModal(user);
       }
     };
 
