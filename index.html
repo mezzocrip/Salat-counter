@@ -192,7 +192,6 @@
           </div>
         </div>
 
-        <!-- Grille du calendrier -->
         <div id="monthly-calendar" class="grid grid-cols-7 gap-1.5 text-center text-xs">
           <!-- Généré en JS -->
         </div>
@@ -260,16 +259,26 @@
       Terrance: { balance: 0, pin: "", history: {}, currentDay: {} }
     };
 
-    const todayObj = new Date();
-    const todayStr = todayObj.toISOString().split('T')[0];
-    const currentMonthStr = todayStr.substring(0, 7);
-    const currentYearStr = todayStr.substring(0, 4);
+    // Variables dynamique de date (se recalculent automatiquement)
+    let todayObj = new Date();
+    let todayStr = todayObj.toISOString().split('T')[0];
+    let currentMonthStr = todayStr.substring(0, 7);
+    let currentYearStr = todayStr.substring(0, 4);
 
-    document.getElementById("current-date").textContent = todayObj.toLocaleDateString('fr-FR', {
-      weekday: 'long', day: 'numeric', month: 'long'
-    });
-    
-    document.getElementById("month-name").textContent = todayObj.toLocaleDateString('fr-FR', { month: 'long' });
+    function refreshDates() {
+      todayObj = new Date();
+      todayStr = todayObj.toISOString().split('T')[0];
+      currentMonthStr = todayStr.substring(0, 7);
+      currentYearStr = todayStr.substring(0, 4);
+
+      document.getElementById("current-date").textContent = todayObj.toLocaleDateString('fr-FR', {
+        weekday: 'long', day: 'numeric', month: 'long'
+      });
+      
+      document.getElementById("month-name").textContent = todayObj.toLocaleDateString('fr-FR', { month: 'long' });
+    }
+
+    refreshDates();
 
     const usersRef = ref(db, 'users');
     onValue(usersRef, (snapshot) => {
@@ -388,6 +397,7 @@
     };
 
     function showAppScreen() {
+      refreshDates();
       document.getElementById("login-screen").classList.add("hidden");
       document.getElementById("app-screen").classList.remove("hidden");
       renderUI();
@@ -424,6 +434,7 @@
     };
 
     window.togglePrayer = function(prayerId) {
+      refreshDates(); // S'assurer que la date est exacte lors de l'action
       const userRefPath = `users/${currentUser}`;
       const isChecked = !(userData[currentUser]?.currentDay?.[todayStr]?.[prayerId]);
       const currentBalance = userData[currentUser]?.balance || 0;
@@ -459,6 +470,7 @@
     };
 
     window.addExpense = function() {
+      refreshDates();
       const currentBalance = userData[currentUser]?.balance || 0;
       const amountStr = prompt(`Montant de la dépense pour ${currentUser} (€) :`);
       if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) return;
@@ -489,6 +501,7 @@
     };
 
     function addTip() {
+      refreshDates();
       const amountStr = prompt(`Montant du don / argent de poche pour ${currentUser} (€) :`);
       if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) return;
 
@@ -514,18 +527,15 @@
       alert(`+${amount}€ ajoutés avec succès !`);
     }
 
-    // CALCUL DE LA SÉRIE (STREAK) AU MOINS 1 PRIÈRE/JOUR
     function calculateStreak() {
       const daysData = userData[currentUser]?.currentDay || {};
       let streak = 0;
       let checkDate = new Date(todayObj);
 
-      // On vérifie si aujourd'hui a au moins une prière
       const todayFormatted = checkDate.toISOString().split('T')[0];
       const todayPrayersCount = Object.values(daysData[todayFormatted] || {}).filter(Boolean).length;
 
       if (todayPrayersCount === 0) {
-        // Si aucune prière aujourd'hui, on regarde à partir d'hier
         checkDate.setDate(checkDate.getDate() - 1);
       }
 
@@ -545,7 +555,6 @@
       return { streak, todayDone: todayPrayersCount >= 1 };
     }
 
-    // RENDU DU CALENDRIER MENSUEL
     function renderMonthlyCalendar() {
       const calContainer = document.getElementById("monthly-calendar");
       calContainer.innerHTML = "";
@@ -553,7 +562,6 @@
       const year = todayObj.getFullYear();
       const month = todayObj.getMonth();
 
-      // En-têtes des jours de la semaine
       const weekDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
       weekDays.forEach(d => {
         const header = document.createElement("div");
@@ -565,11 +573,9 @@
       const firstDayOfMonth = new Date(year, month, 1);
       const lastDayOfMonth = new Date(year, month + 1, 0);
       
-      // Décalage pour commencer le lundi (0 = Lundi, 6 = Dimanche)
       let startingDayIndex = firstDayOfMonth.getDay() - 1;
       if (startingDayIndex === -1) startingDayIndex = 6;
 
-      // Cases vides avant le 1er du mois
       for (let i = 0; i < startingDayIndex; i++) {
         const emptyCell = document.createElement("div");
         calContainer.appendChild(emptyCell);
@@ -577,7 +583,6 @@
 
       const daysData = userData[currentUser]?.currentDay || {};
 
-      // Génération des jours du mois
       for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
         const formattedDay = day < 10 ? `0${day}` : day;
         const formattedMonth = (month + 1) < 10 ? `0${month + 1}` : (month + 1);
@@ -596,7 +601,6 @@
           bgClass = "bg-amber-500/20 border-amber-500/50 text-amber-300";
         }
 
-        // Entourer le jour actuel
         if (dateKey === todayStr) {
           bgClass += " ring-2 ring-amber-400";
         }
@@ -609,13 +613,14 @@
 
     function renderUI() {
       if (!currentUser) return;
+      refreshDates(); // Recalcule la date du jour exacte à chaque affichage
 
       document.getElementById("current-user-name").textContent = currentUser;
 
       const balance = userData[currentUser]?.balance || 0;
       document.getElementById("user-balance").textContent = balance;
 
-      // Série de jours
+      // Série
       const { streak, todayDone } = calculateStreak();
       document.getElementById("streak-count").textContent = `${streak} jour${streak > 1 ? 's' : ''} consécutif${streak > 1 ? 's' : ''}`;
       
@@ -628,7 +633,7 @@
         badge.className = "text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md";
       }
 
-      // Prières du jour
+      // Prières DU JOUR uniquement
       const todayPrayers = userData[currentUser]?.currentDay?.[todayStr] || {};
       const prayersContainer = document.getElementById("prayers-list");
       prayersContainer.innerHTML = "";
