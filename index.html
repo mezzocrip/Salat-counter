@@ -34,20 +34,17 @@
         overflow-y: auto;
       }
     }
-    /* Animation Secousse d'erreur */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-10px); }
       40%, 80% { transform: translateX(10px); }
     }
-    .shake {
-      animation: shake 0.35s ease-in-out;
-    }
+    .shake { animation: shake 0.35s ease-in-out; }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased flex items-center justify-center">
 
-  <!-- ==================== ÉCRAN 1 : LOGIN / SELECTION PROFIL ==================== -->
+  <!-- ==================== ÉCRAN 1 : LOGIN ==================== -->
   <div id="login-screen" class="w-full max-w-md bg-slate-800/90 backdrop-blur border border-slate-700/60 p-6 md:p-8 rounded-3xl shadow-2xl text-center">
     <div class="text-4xl mb-3">🌙</div>
     <h1 class="text-2xl font-bold tracking-tight text-amber-400 mb-1">Suivi des Prières</h1>
@@ -55,16 +52,12 @@
 
     <div class="space-y-4 mb-8">
       <button onclick="loginUser('Joyce')" class="w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all border border-slate-600 bg-slate-700/70 text-slate-100 hover:bg-amber-500 hover:border-amber-400 hover:text-slate-900 flex items-center justify-between shadow-lg group">
-        <span class="flex items-center gap-3">
-          <span class="text-2xl">👤</span> Joyce
-        </span>
+        <span class="flex items-center gap-3"><span class="text-2xl">👤</span> Joyce</span>
         <span id="badge-pin-Joyce" class="text-xs font-normal text-slate-400 group-hover:text-slate-900"></span>
       </button>
 
       <button onclick="loginUser('Terrance')" class="w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all border border-slate-600 bg-slate-700/70 text-slate-100 hover:bg-amber-500 hover:border-amber-400 hover:text-slate-900 flex items-center justify-between shadow-lg group">
-        <span class="flex items-center gap-3">
-          <span class="text-2xl">👤</span> Terrance
-        </span>
+        <span class="flex items-center gap-3"><span class="text-2xl">👤</span> Terrance</span>
         <span id="badge-pin-Terrance" class="text-xs font-normal text-slate-400 group-hover:text-slate-900"></span>
       </button>
     </div>
@@ -74,14 +67,12 @@
     </button>
   </div>
 
-  <!-- ==================== MODALE PAVÉ NUMÉRIQUE COMPACT ==================== -->
+  <!-- ==================== MODALE PAVÉ NUMÉRIQUE ==================== -->
   <div id="pin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div id="pin-card" class="bg-[#1c222b] border border-slate-800 p-6 md:p-8 rounded-[32px] w-full max-w-[320px] text-center shadow-2xl">
-      
       <h3 id="pin-modal-title" class="text-lg font-bold text-slate-100 mb-1">Code PIN requis</h3>
       <p id="pin-modal-sub" class="text-xs text-slate-400 mb-6">Saisissez votre code à 4 chiffres</p>
       
-      <!-- Les 4 Puces PIN -->
       <div class="flex justify-center gap-4 mb-2">
         <div id="dot-0" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
         <div id="dot-1" class="w-3.5 h-3.5 rounded-full border border-slate-500 bg-transparent transition-all"></div>
@@ -91,7 +82,6 @@
 
       <p id="pin-error-msg" class="text-xs text-rose-400 font-medium h-6 mb-2"></p>
 
-      <!-- Clavier Numérique -->
       <div class="grid grid-cols-3 gap-3 justify-items-center">
         <button onclick="pressPin('1')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">1</button>
         <button onclick="pressPin('2')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">2</button>
@@ -102,13 +92,10 @@
         <button onclick="pressPin('7')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">7</button>
         <button onclick="pressPin('8')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">8</button>
         <button onclick="pressPin('9')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">9</button>
-        
-        <!-- Ligne du bas : Annuler / 0 / Effacer -->
         <button onclick="closePinModal()" class="w-16 h-16 flex items-center justify-center text-sm font-medium text-rose-500 active:opacity-70">Annuler</button>
         <button onclick="pressPin('0')" class="w-16 h-16 rounded-full bg-[#2a323d] active:bg-slate-600 flex items-center justify-center text-2xl font-medium text-slate-100 transition-all">0</button>
         <button onclick="clearPin()" class="w-16 h-16 flex items-center justify-center text-xl text-slate-400 active:text-slate-100">⌫</button>
       </div>
-
     </div>
   </div>
 
@@ -118,7 +105,7 @@
     <!-- COLONNE GAUCHE : Profil & Solde -->
     <div class="flex flex-col justify-between bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl mb-6 md:mb-0 shadow-xl">
       <div>
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-4">
           <div class="flex items-center gap-2">
             <span class="text-xl">🌙</span>
             <span id="current-user-name" class="font-bold text-lg text-amber-400"></span>
@@ -129,7 +116,7 @@
         </div>
 
         <!-- Solde Totale -->
-        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 mb-4">
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 mb-3">
           <span class="text-xs text-slate-400 block mb-1">Cagnotte disponible</span>
           <div class="flex items-baseline gap-1">
             <span id="user-balance" class="text-4xl font-extrabold text-emerald-400">0</span>
@@ -137,14 +124,24 @@
           </div>
         </div>
 
+        <!-- BLOC SÉRIE DE RÉGULARITÉ (STREAK) -->
+        <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 p-3.5 rounded-xl mb-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">🔥</span>
+            <div>
+              <div class="text-xs text-slate-400">Série de régularité</div>
+              <div id="streak-count" class="text-sm font-bold text-amber-400">0 jour consécutif</div>
+            </div>
+          </div>
+          <span id="streak-badge" class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md">Atteint aujourd'hui</span>
+        </div>
+
         <!-- Boutons d'actions -->
         <div class="space-y-2 mb-4">
-          <!-- Bouton Dépense -->
           <button onclick="addExpense()" class="w-full py-3 px-4 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-500/10">
             🛒 Enregistrer une dépense
           </button>
 
-          <!-- Bouton Don / Tips (Protégé Parent) -->
           <button onclick="openPinModal('tip')" class="w-full py-3 px-4 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10">
             🎁 Donner un tips / Argent de poche
           </button>
@@ -169,7 +166,7 @@
       </div>
     </div>
 
-    <!-- COLONNE DROITE : Prières du jour + Historique -->
+    <!-- COLONNE DROITE : Prières + Calendrier Mensuel + Historique -->
     <div class="scrollable-content space-y-6">
       
       <!-- Liste des prières -->
@@ -184,7 +181,24 @@
         </div>
       </div>
 
-      <!-- Historique avec filtres Mois / Année -->
+      <!-- BLOC : RÉCAPITULATIF CALENDRIER MENSUEL -->
+      <div class="bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl shadow-xl">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-lg font-bold text-slate-100">Récapitulatif de <span id="month-name" class="text-amber-400">ce mois</span></h2>
+          <div class="flex items-center gap-2 text-[10px] text-slate-400">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 5/5</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> 1 à 4</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block"></span> 0</span>
+          </div>
+        </div>
+
+        <!-- Grille du calendrier -->
+        <div id="monthly-calendar" class="grid grid-cols-7 gap-1.5 text-center text-xs">
+          <!-- Généré en JS -->
+        </div>
+      </div>
+
+      <!-- Historique avec filtres -->
       <div class="bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl shadow-xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <h2 class="text-lg font-bold text-slate-100">Historique</h2>
@@ -209,7 +223,7 @@
     </div>
   </div>
 
-  <!-- FIREBASE CONFIGURÉ -->
+  <!-- FIREBASE ENGINE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -238,7 +252,6 @@
     const MASTER_PIN = "0941";
     let currentUser = null;
     let currentFilter = "all";
-    
     let pinTarget = null;
     let currentEnteredPin = "";
 
@@ -255,6 +268,8 @@
     document.getElementById("current-date").textContent = todayObj.toLocaleDateString('fr-FR', {
       weekday: 'long', day: 'numeric', month: 'long'
     });
+    
+    document.getElementById("month-name").textContent = todayObj.toLocaleDateString('fr-FR', { month: 'long' });
 
     const usersRef = ref(db, 'users');
     onValue(usersRef, (snapshot) => {
@@ -275,7 +290,6 @@
       document.getElementById("badge-pin-Terrance").textContent = (userData.Terrance.pin && userData.Terrance.pin !== "") ? "🔒 Protegé" : "🔓 Libre d'accès";
     }
 
-    // Gestion de la modale PIN
     window.openPinModal = function(target) {
       pinTarget = target;
       currentEnteredPin = "";
@@ -351,13 +365,9 @@
         const card = document.getElementById("pin-card");
         document.getElementById("pin-error-msg").textContent = "Code PIN incorrect";
         card.classList.add("shake");
-
         currentEnteredPin = "";
         updateDots();
-
-        setTimeout(() => {
-          card.classList.remove("shake");
-        }, 400);
+        setTimeout(() => card.classList.remove("shake"), 400);
       }
     }
 
@@ -386,30 +396,24 @@
     function openSettingsMenu() {
       const choice = prompt(
         "--- RÉGLAGES PARENT ---\n\n" +
-        "1. Définir/Modifier le code PIN de Joyce\n" +
-        "2. Définir/Modifier le code PIN de Terrance\n" +
+        "1. Modifier le code PIN de Joyce\n" +
+        "2. Modifier le code PIN de Terrance\n" +
         "3. Ajuster la cagnotte de Joyce\n" +
         "4. Ajuster la cagnotte de Terrance\n\n" +
-        "Entrez le numéro de votre choix (1, 2, 3 ou 4) :"
+        "Entrez le numéro (1, 2, 3 ou 4) :"
       );
 
       if (choice === "1") {
-        const newPin = prompt("Nouveau code PIN (4 chiffres) pour Joyce (Laissez vide pour supprimer) :", userData.Joyce.pin || "");
-        if (newPin !== null) {
-          set(ref(db, 'users/Joyce/pin'), newPin.trim());
-          alert(newPin.trim() === "" ? "Code PIN supprimé." : "Code PIN mis à jour !");
-        }
+        const newPin = prompt("Nouveau code PIN Joyce (4 chiffres) :", userData.Joyce.pin || "");
+        if (newPin !== null) set(ref(db, 'users/Joyce/pin'), newPin.trim());
       } else if (choice === "2") {
-        const newPin = prompt("Nouveau code PIN (4 chiffres) pour Terrance (Laissez vide pour supprimer) :", userData.Terrance.pin || "");
-        if (newPin !== null) {
-          set(ref(db, 'users/Terrance/pin'), newPin.trim());
-          alert(newPin.trim() === "" ? "Code PIN supprimé." : "Code PIN mis à jour !");
-        }
+        const newPin = prompt("Nouveau code PIN Terrance (4 chiffres) :", userData.Terrance.pin || "");
+        if (newPin !== null) set(ref(db, 'users/Terrance/pin'), newPin.trim());
       } else if (choice === "3") {
-        const newBal = prompt("Ajuster la cagnotte de Joyce (€) :", userData.Joyce.balance || 0);
+        const newBal = prompt("Ajuster cagnotte Joyce (€) :", userData.Joyce.balance || 0);
         if (newBal !== null && !isNaN(newBal)) set(ref(db, 'users/Joyce/balance'), parseInt(newBal, 10));
       } else if (choice === "4") {
-        const newBal = prompt("Ajuster la cagnotte de Terrance (€) :", userData.Terrance.balance || 0);
+        const newBal = prompt("Ajuster cagnotte Terrance (€) :", userData.Terrance.balance || 0);
         if (newBal !== null && !isNaN(newBal)) set(ref(db, 'users/Terrance/balance'), parseInt(newBal, 10));
       }
     }
@@ -419,7 +423,6 @@
       renderUI();
     };
 
-    // OPTION A : COCHER / DÉCOCHER LA PRIÈRE + SUPPRESSION DE L'HISTORIQUE EN CAS DE DÉCOCHAGE
     window.togglePrayer = function(prayerId) {
       const userRefPath = `users/${currentUser}`;
       const isChecked = !(userData[currentUser]?.currentDay?.[todayStr]?.[prayerId]);
@@ -434,7 +437,6 @@
       updates[`${userRefPath}/balance`] = newBalance;
       
       if (isChecked) {
-        // COCHER : On ajoute la ligne dans l'historique
         const historyKey = Date.now();
         updates[`${userRefPath}/history/${historyKey}`] = {
           text: `${todayStr} à ${timestamp} : ${prayerName} (+1€)`,
@@ -444,7 +446,6 @@
           amount: 1
         };
       } else {
-        // DÉCOCHER (OPTION A) : On trouve la clé d'historique de cette prière aujourd'hui et on la supprime (null)
         const historyObj = userData[currentUser]?.history || {};
         Object.keys(historyObj).forEach(key => {
           const item = historyObj[key];
@@ -468,7 +469,7 @@
         return;
       }
 
-      const reason = prompt("Objet de la dépense (ex: Jouet, Bonbons, Livre...) :") || "Dépense";
+      const reason = prompt("Objet de la dépense (ex: Jouet, Bonbons...) :") || "Dépense";
       const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
       const newBalance = currentBalance - amount;
 
@@ -492,7 +493,7 @@
       if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) return;
 
       const amount = parseFloat(amountStr);
-      const reason = prompt("Raison du don (ex: Argent de poche, Cadeau, Aide...) :") || "Don / Tips";
+      const reason = prompt("Raison du don :") || "Don / Tips";
       const currentBalance = userData[currentUser]?.balance || 0;
       const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
       const newBalance = currentBalance + amount;
@@ -510,7 +511,100 @@
       };
 
       update(ref(db), updates);
-      alert(`+${amount}€ ajoutés avec succès à la cagnotte de ${currentUser} !`);
+      alert(`+${amount}€ ajoutés avec succès !`);
+    }
+
+    // CALCUL DE LA SÉRIE (STREAK) AU MOINS 1 PRIÈRE/JOUR
+    function calculateStreak() {
+      const daysData = userData[currentUser]?.currentDay || {};
+      let streak = 0;
+      let checkDate = new Date(todayObj);
+
+      // On vérifie si aujourd'hui a au moins une prière
+      const todayFormatted = checkDate.toISOString().split('T')[0];
+      const todayPrayersCount = Object.values(daysData[todayFormatted] || {}).filter(Boolean).length;
+
+      if (todayPrayersCount === 0) {
+        // Si aucune prière aujourd'hui, on regarde à partir d'hier
+        checkDate.setDate(checkDate.getDate() - 1);
+      }
+
+      while (true) {
+        const dateStr = checkDate.toISOString().split('T')[0];
+        const dayPrayers = daysData[dateStr] || {};
+        const count = Object.values(dayPrayers).filter(Boolean).length;
+
+        if (count >= 1) {
+          streak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+
+      return { streak, todayDone: todayPrayersCount >= 1 };
+    }
+
+    // RENDU DU CALENDRIER MENSUEL
+    function renderMonthlyCalendar() {
+      const calContainer = document.getElementById("monthly-calendar");
+      calContainer.innerHTML = "";
+
+      const year = todayObj.getFullYear();
+      const month = todayObj.getMonth();
+
+      // En-têtes des jours de la semaine
+      const weekDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+      weekDays.forEach(d => {
+        const header = document.createElement("div");
+        header.className = "text-[10px] font-bold text-slate-500 mb-1";
+        header.textContent = d;
+        calContainer.appendChild(header);
+      });
+
+      const firstDayOfMonth = new Date(year, month, 1);
+      const lastDayOfMonth = new Date(year, month + 1, 0);
+      
+      // Décalage pour commencer le lundi (0 = Lundi, 6 = Dimanche)
+      let startingDayIndex = firstDayOfMonth.getDay() - 1;
+      if (startingDayIndex === -1) startingDayIndex = 6;
+
+      // Cases vides avant le 1er du mois
+      for (let i = 0; i < startingDayIndex; i++) {
+        const emptyCell = document.createElement("div");
+        calContainer.appendChild(emptyCell);
+      }
+
+      const daysData = userData[currentUser]?.currentDay || {};
+
+      // Génération des jours du mois
+      for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+        const formattedDay = day < 10 ? `0${day}` : day;
+        const formattedMonth = (month + 1) < 10 ? `0${month + 1}` : (month + 1);
+        const dateKey = `${year}-${formattedMonth}-${formattedDay}`;
+
+        const dayPrayers = daysData[dateKey] || {};
+        const prayersCount = Object.values(dayPrayers).filter(Boolean).length;
+
+        const cell = document.createElement("div");
+        cell.className = "aspect-square rounded-lg flex flex-col items-center justify-center p-1 text-[11px] font-semibold border transition-all";
+
+        let bgClass = "bg-slate-900/40 border-slate-700/40 text-slate-500";
+        if (prayersCount === 5) {
+          bgClass = "bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold";
+        } else if (prayersCount >= 1) {
+          bgClass = "bg-amber-500/20 border-amber-500/50 text-amber-300";
+        }
+
+        // Entourer le jour actuel
+        if (dateKey === todayStr) {
+          bgClass += " ring-2 ring-amber-400";
+        }
+
+        cell.className += ` ${bgClass}`;
+        cell.innerHTML = `<span>${day}</span>`;
+        calContainer.appendChild(cell);
+      }
     }
 
     function renderUI() {
@@ -521,12 +615,25 @@
       const balance = userData[currentUser]?.balance || 0;
       document.getElementById("user-balance").textContent = balance;
 
+      // Série de jours
+      const { streak, todayDone } = calculateStreak();
+      document.getElementById("streak-count").textContent = `${streak} jour${streak > 1 ? 's' : ''} consécutif${streak > 1 ? 's' : ''}`;
+      
+      const badge = document.getElementById("streak-badge");
+      if (todayDone) {
+        badge.textContent = "Actif aujourd'hui ✓";
+        badge.className = "text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md";
+      } else {
+        badge.textContent = "En attente d'1 prière";
+        badge.className = "text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md";
+      }
+
+      // Prières du jour
       const todayPrayers = userData[currentUser]?.currentDay?.[todayStr] || {};
       const prayersContainer = document.getElementById("prayers-list");
       prayersContainer.innerHTML = "";
 
       let count = 0;
-
       PRAYERS.forEach(p => {
         const done = !!todayPrayers[p.id];
         if (done) count++;
@@ -560,6 +667,10 @@
       document.getElementById("progress-bar").style.width = `${percent}%`;
       document.getElementById("progress-text").textContent = `${count}/5 (${count}€)`;
 
+      // Calendrier mensuel
+      renderMonthlyCalendar();
+
+      // Historique
       ['all', 'month', 'year'].forEach(f => {
         const btn = document.getElementById(`filter-${f}`);
         if (f === currentFilter) {
@@ -579,7 +690,7 @@
 
       historyKeys.forEach(k => {
         const item = historyObj[k];
-        if (!item) return; // Sécurité si un élément vient d'être supprimé (null)
+        if (!item) return;
 
         const isObj = typeof item === 'object';
         const text = isObj ? item.text : item;
