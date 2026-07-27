@@ -10,11 +10,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Prières">
   
-  <!-- Icône personnalisée SVG Data-URI pour iOS & Safari -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><circle cx='256' cy='256' r='200' fill='none' stroke='%23334155' stroke-width='8'/><path d='M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z' fill='%23fbbf24'/><polygon points='330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195' fill='%23f59e0b'/><path d='M160 380 Q 256 300 352 380 L 352 400 L 160 400 Z' fill='%231e293b'/></svg>">
+  <!-- Icône SVG Data-URI pour iOS -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><circle cx='256' cy='256' r='200' fill='none' stroke='%23334155' stroke-width='8'/><path d='M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z' fill='%23fbbf24'/><polygon points='330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195' fill='%23f59e0b'/><path d='M160 380 Q 256 300 352 380 L 160 400 Z' fill='%231e293b'/></svg>">
 
   <!-- Manifest JSON dynamique pour PWA -->
-  <link rel="manifest" href='data:application/json,{"name":"Suivi des Prières","short_name":"Prières","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%230f172a%22/><circle cx=%22256%22 cy=%22256%22 r=%22200%22 fill=%22none%22 stroke=%22%23334155%22 stroke-width=%228%22/><path d=%22M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z%22 fill=%22%23fbbf24%22/><polygon points=%22330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195%22 fill=%22%23f59e0b%22/><path d=%22M160 380 Q 256 300 352 380 L 352 400 L 160 400 Z%22 fill=%22%231e293b%22/></svg>","sizes":"512x512","type":"image/svg+xml"}]}'>
+  <link rel="manifest" href='data:application/json,{"name":"Suivi des Prières","short_name":"Prières","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%230f172a%22/><circle cx=%22256%22 cy=%22256%22 r=%22200%22 fill=%22none%22 stroke=%22%23334155%22 stroke-width=%228%22/><path d=%22M210 130 A110 110 0 1 0 340 310 A125 125 0 1 1 210 130 Z%22 fill=%22%23fbbf24%22/><polygon points=%22330,170 338,195 364,195 343,211 351,236 330,220 309,236 317,211 296,195 322,195%22 fill=%22%23f59e0b%22/><path d=%22M160 380 Q 256 300 352 380 L 160 400 Z%22 fill=%22%231e293b%22/></svg>","sizes":"512x512","type":"image/svg+xml"}]}'>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -23,11 +23,9 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       touch-action: manipulation;
-      /* Gestion explicite de la zone haute sécurisée pour iOS (Dynamic Island / Encoche) */
       padding-top: max(2rem, env(safe-area-inset-top));
       padding-bottom: max(2rem, env(safe-area-inset-bottom));
     }
-    /* Layout iPad Paysage */
     @media (min-width: 768px) and (orientation: landscape) {
       .app-layout {
         display: grid;
@@ -71,6 +69,11 @@
             <span class="text-2xl font-bold text-emerald-400">€</span>
           </div>
         </div>
+
+        <!-- Bouton Dépense -->
+        <button onclick="addExpense()" class="w-full mb-4 py-3 px-4 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-500/10">
+          🛒 Enregistrer une dépense
+        </button>
 
         <!-- Barre de progression -->
         <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
@@ -194,6 +197,31 @@
       update(ref(db), updates);
     };
 
+    window.addExpense = function() {
+      const currentBalance = userData[currentUser]?.balance || 0;
+      const amountStr = prompt(`Montant de la dépense pour ${currentUser} (€) :`);
+      if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) return;
+
+      const amount = parseFloat(amountStr);
+      if (amount > currentBalance) {
+        alert(`Solde insuffisant ! ${currentUser} n'a que ${currentBalance}€ disponible.`);
+        return;
+      }
+
+      const reason = prompt("Objet de la dépense (ex: Jouet, Bonbons, Livre...) :") || "Dépense";
+      const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const newBalance = currentBalance - amount;
+
+      const userRefPath = `users/${currentUser}`;
+      const historyKey = Date.now();
+
+      const updates = {};
+      updates[`${userRefPath}/balance`] = newBalance;
+      updates[`${userRefPath}/history/${historyKey}`] = `🛒 ${todayStr} à ${timestamp} : ${reason} (-${amount}€)`;
+
+      update(ref(db), updates);
+    };
+
     window.editBalance = function() {
       const current = userData[currentUser]?.balance || 0;
       const val = prompt(`Ajuster la cagnotte de ${currentUser} (€) :`, current);
@@ -253,13 +281,17 @@
       const historyKeys = Object.keys(historyObj).sort().reverse();
 
       if (historyKeys.length === 0) {
-        historyContainer.innerHTML = `<p class="text-xs italic text-slate-500">Aucune prière validée pour le moment.</p>`;
+        historyContainer.innerHTML = `<p class="text-xs italic text-slate-500">Aucune activité enregistrée.</p>`;
       } else {
-        historyContainer.innerHTML = historyKeys.slice(0, 10).map(k => `
-          <div class="py-1.5 border-b border-slate-700/40 flex justify-between items-center text-xs">
-            <span>${historyObj[k]}</span>
-          </div>
-        `).join('');
+        historyContainer.innerHTML = historyKeys.slice(0, 10).map(k => {
+          const item = historyObj[k];
+          const isExpense = item.includes('🛒') || item.includes('(-');
+          return `
+            <div class="py-1.5 border-b border-slate-700/40 flex justify-between items-center text-xs ${isExpense ? 'text-rose-300' : 'text-slate-300'}">
+              <span>${item}</span>
+            </div>
+          `;
+        }).join('');
       }
     }
   </script>
