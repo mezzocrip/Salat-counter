@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Suivi des Prières</title>
+
+  <!-- Configuration PWA pour iOS 18 (Raccourci écran d'accueil -> Mode App) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Prières">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/192/000000/star-and-crescent.png">
+
+  <!-- Manifest JSON dynamique -->
+  <link rel="manifest" href='data:application/json,{"name":"Suivi des Prières","short_name":"Prières","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://img.icons8.com/emoji/192/000000/star-and-crescent.png","sizes":"192x192","type":"image/png"}]}'>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    /* Dynamic Layout pour iPad en Paysage */
+    @media (min-width: 768px) and (orientation: landscape) {
+      .app-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 1.5rem;
+        height: calc(100vh - 2rem);
+      }
+      .scrollable-content {
+        overflow-y: auto;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6 antialiased pt-12 pb-8">
+
+  <div class="max-w-6xl mx-auto app-layout">
+    
+    <!-- COLONNE GAUCHE : Profils & Solde -->
+    <div class="flex flex-col justify-between bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl mb-6 md:mb-0 shadow-xl">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-amber-400 mb-4 flex items-center gap-2">
+          🌙 Suivi des Prières
+        </h1>
+
+        <!-- Utilisateurs -->
+        <label class="block text-xs text-slate-400 uppercase font-semibold mb-2">Sélectionner l'utilisateur</label>
+        <div class="grid grid-cols-2 gap-2 mb-6">
+          <button id="btn-Joyce" onclick="switchUser('Joyce')" class="py-2.5 px-4 rounded-xl font-medium text-sm transition-all border border-slate-600 bg-slate-700 text-slate-300 hover:border-amber-400">
+            Joyce
+          </button>
+          <button id="btn-Terrance" onclick="switchUser('Terrance')" class="py-2.5 px-4 rounded-xl font-medium text-sm transition-all border border-slate-600 bg-slate-700 text-slate-300 hover:border-amber-400">
+            Terrance
+          </button>
+        </div>
+
+        <!-- Solde Totale -->
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 mb-4">
+          <span class="text-xs text-slate-400 block mb-1">Cagnotte totale</span>
+          <div class="flex items-baseline gap-1">
+            <span id="user-balance" class="text-4xl font-extrabold text-emerald-400">0</span>
+            <span class="text-2xl font-bold text-emerald-400">€</span>
+          </div>
+        </div>
+
+        <!-- Barre de progression -->
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+          <div class="flex justify-between text-xs mb-2">
+            <span class="text-slate-400">Progression aujourd'hui</span>
+            <span id="progress-text" class="text-amber-400 font-semibold">0/5 (0€)</span>
+          </div>
+          <div class="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
+            <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-700/50">
+        <button onclick="editBalance()" class="text-xs text-slate-400 hover:text-slate-200 underline w-full text-center">
+          Ajuster la cagnotte manuellement
+        </button>
+      </div>
+    </div>
+
+    <!-- COLONNE DROITE : Prières du jour + Historique -->
+    <div class="scrollable-content space-y-6">
+      
+      <!-- Liste des prières -->
+      <div class="bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl shadow-xl">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-slate-100">Prières du jour</h2>
+          <span id="current-date" class="text-xs text-slate-400 bg-slate-700/50 px-2.5 py-1 rounded-md"></span>
+        </div>
+
+        <div id="prayers-list" class="space-y-3">
+          <!-- Généré en JS -->
+        </div>
+      </div>
+
+      <!-- Historique -->
+      <div class="bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl shadow-xl">
+        <h2 class="text-lg font-bold text-slate-100 mb-3">Historique récent</h2>
+        <div id="history-list" class="space-y-2 text-sm max-h-48 overflow-y-auto pr-1 text-slate-400">
+          <p class="text-xs italic">Chargement de la base de données...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FIREBASE CONFIGURÉ DIRECTEMENT AVEC TES CLÉS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCa6-YBdpdFisBDwPVR_sK2_-4gCLUIYh4",
+      authDomain: "salat-count.firebaseapp.com",
+      databaseURL: "https://salat-count-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "salat-count",
+      storageBucket: "salat-count.firebasestorage.app",
+      messagingSenderId: "563219751634",
+      appId: "1:563219751634:web:ddbdb74b3266a7c6edc30b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const PRAYERS = [
+      { id: "fajr", name: "Fajr", icon: "🌅" },
+      { id: "dhuhr", name: "Dhuhr", icon: "☀️" },
+      { id: "asr", name: "Asr", icon: "🌤️" },
+      { id: "maghrib", name: "Maghrib", icon: "🌆" },
+      { id: "isha", name: "Isha", icon: "🌙" }
+    ];
+
+    let currentUser = "Joyce";
+    let userData = {
+      Joyce: { balance: 36, history: {}, currentDay: {} },
+      Terrance: { balance: 0, history: {}, currentDay: {} }
+    };
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    document.getElementById("current-date").textContent = new Date().toLocaleDateString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'long'
+    });
+
+    // Écoute en temps réel
+    const usersRef = ref(db, 'users');
+    onValue(usersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        if (data.Joyce) userData.Joyce = data.Joyce;
+        if (data.Terrance) userData.Terrance = data.Terrance;
+      } else {
+        set(ref(db, 'users/Joyce/balance'), 36);
+        set(ref(db, 'users/Terrance/balance'), 0);
+      }
+      renderUI();
+    });
+
+    window.switchUser = function(user) {
+      currentUser = user;
+      renderUI();
+    };
+
+    window.togglePrayer = function(prayerId) {
+      const userRefPath = `users/${currentUser}`;
+      const isChecked = !(userData[currentUser]?.currentDay?.[todayStr]?.[prayerId]);
+      const currentBalance = userData[currentUser]?.balance || 0;
+      const newBalance = isChecked ? currentBalance + 1 : Math.max(0, currentBalance - 1);
+
+      const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const prayerName = PRAYERS.find(p => p.id === prayerId).name;
+
+      const updates = {};
+      updates[`${userRefPath}/currentDay/${todayStr}/${prayerId}`] = isChecked;
+      updates[`${userRefPath}/balance`] = newBalance;
+      
+      if (isChecked) {
+        const historyKey = Date.now();
+        updates[`${userRefPath}/history/${historyKey}`] = `${todayStr} à ${timestamp} : ${prayerName} (+1€)`;
+      }
+
+      update(ref(db), updates);
+    };
+
+    window.editBalance = function() {
+      const current = userData[currentUser]?.balance || 0;
+      const val = prompt(`Ajuster la cagnotte de ${currentUser} (€) :`, current);
+      if (val !== null && !isNaN(val)) {
+        set(ref(db, `users/${currentUser}/balance`), parseInt(val, 10));
+      }
+    };
+
+    function renderUI() {
+      document.getElementById("btn-Joyce").className = `py-2.5 px-4 rounded-xl font-medium text-sm transition-all border ${currentUser === 'Joyce' ? 'bg-amber-500 border-amber-400 text-slate-900 font-bold shadow-lg shadow-amber-500/20' : 'bg-slate-700/60 border-slate-600 text-slate-300'}`;
+      document.getElementById("btn-Terrance").className = `py-2.5 px-4 rounded-xl font-medium text-sm transition-all border ${currentUser === 'Terrance' ? 'bg-amber-500 border-amber-400 text-slate-900 font-bold shadow-lg shadow-amber-500/20' : 'bg-slate-700/60 border-slate-600 text-slate-300'}`;
+
+      const balance = userData[currentUser]?.balance || 0;
+      document.getElementById("user-balance").textContent = balance;
+
+      const todayPrayers = userData[currentUser]?.currentDay?.[todayStr] || {};
+      const prayersContainer = document.getElementById("prayers-list");
+      prayersContainer.innerHTML = "";
+
+      let count = 0;
+
+      PRAYERS.forEach(p => {
+        const done = !!todayPrayers[p.id];
+        if (done) count++;
+
+        const card = document.createElement("div");
+        card.onclick = () => window.togglePrayer(p.id);
+        card.className = `flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${
+          done 
+            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200' 
+            : 'bg-slate-900/40 border-slate-700/60 text-slate-300 hover:border-slate-500'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-xl">${p.icon}</span>
+            <span class="font-semibold text-base">${p.name}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold ${done ? 'text-emerald-400' : 'text-slate-500'}">+1 €</span>
+            <div class="w-6 h-6 rounded-lg border flex items-center justify-center ${
+              done ? 'bg-emerald-500 border-emerald-400 text-slate-900' : 'border-slate-600 bg-slate-800'
+            }">
+              ${done ? '✓' : ''}
+            </div>
+          </div>
+        `;
+        prayersContainer.appendChild(card);
+      });
+
+      const percent = (count / 5) * 100;
+      document.getElementById("progress-bar").style.width = `${percent}%`;
+      document.getElementById("progress-text").textContent = `${count}/5 (${count}€)`;
+
+      const historyContainer = document.getElementById("history-list");
+      const historyObj = userData[currentUser]?.history || {};
+      const historyKeys = Object.keys(historyObj).sort().reverse();
+
+      if (historyKeys.length === 0) {
+        historyContainer.innerHTML = `<p class="text-xs italic text-slate-500">Aucune prière validée pour le moment.</p>`;
+      } else {
+        historyContainer.innerHTML = historyKeys.slice(0, 10).map(k => `
+          <div class="py-1.5 border-b border-slate-700/40 flex justify-between items-center text-xs">
+            <span>${historyObj[k]}</span>
+          </div>
+        `).join('');
+      }
+    }
+  </script>
+</body>
+</html>
