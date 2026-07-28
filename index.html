@@ -115,12 +115,29 @@
           </button>
         </div>
 
-        <!-- Solde Totale -->
-        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 mb-3">
-          <span class="text-xs text-slate-400 block mb-1">Cagnotte disponible</span>
-          <div class="flex items-baseline gap-1">
-            <span id="user-balance" class="text-4xl font-extrabold text-emerald-400">0</span>
-            <span class="text-2xl font-bold text-emerald-400">€</span>
+        <!-- Solde Totale + Gains du Mois -->
+        <div class="grid grid-cols-1 gap-2.5 mb-3">
+          <!-- Cagnotte disponible -->
+          <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+            <span class="text-xs text-slate-400 block mb-1">Cagnotte disponible</span>
+            <div class="flex items-baseline gap-1">
+              <span id="user-balance" class="text-4xl font-extrabold text-emerald-400">0</span>
+              <span class="text-2xl font-bold text-emerald-400">€</span>
+            </div>
+          </div>
+
+          <!-- Gains du mois -->
+          <div class="bg-amber-500/10 p-3.5 rounded-xl border border-amber-500/20 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] text-amber-300/80 font-medium block">Gagné ce mois-ci</span>
+              <div class="flex items-baseline gap-1 mt-0.5">
+                <span id="monthly-gained" class="text-2xl font-extrabold text-amber-400">0</span>
+                <span class="text-lg font-bold text-amber-400">€</span>
+              </div>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xl shadow-inner">
+              📅
+            </div>
           </div>
         </div>
 
@@ -259,7 +276,7 @@
       Terrance: { balance: 0, pin: "", history: {}, currentDay: {} }
     };
 
-    // Variables dynamique de date (se recalculent automatiquement)
+    // Variables dynamique de date
     let todayObj = new Date();
     let todayStr = todayObj.toISOString().split('T')[0];
     let currentMonthStr = todayStr.substring(0, 7);
@@ -434,7 +451,7 @@
     };
 
     window.togglePrayer = function(prayerId) {
-      refreshDates(); // S'assurer que la date est exacte lors de l'action
+      refreshDates();
       const userRefPath = `users/${currentUser}`;
       const isChecked = !(userData[currentUser]?.currentDay?.[todayStr]?.[prayerId]);
       const currentBalance = userData[currentUser]?.balance || 0;
@@ -613,12 +630,31 @@
 
     function renderUI() {
       if (!currentUser) return;
-      refreshDates(); // Recalcule la date du jour exacte à chaque affichage
+      refreshDates();
 
       document.getElementById("current-user-name").textContent = currentUser;
 
       const balance = userData[currentUser]?.balance || 0;
       document.getElementById("user-balance").textContent = balance;
+
+      // Calcul dynamique des gains du mois en cours
+      const historyObj = userData[currentUser]?.history || {};
+      let monthlyGain = 0;
+
+      Object.values(historyObj).forEach(item => {
+        if (!item) return;
+        const isObj = typeof item === 'object';
+        const itemDate = isObj ? item.date : (item.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '');
+        
+        if (itemDate.startsWith(currentMonthStr)) {
+          if (isObj) {
+            if (item.type === 'gain') monthlyGain += item.amount;
+          } else if (!item.includes('🛒') && !item.includes('(-')) {
+            monthlyGain += 1;
+          }
+        }
+      });
+      document.getElementById("monthly-gained").textContent = monthlyGain;
 
       // Série
       const { streak, todayDone } = calculateStreak();
@@ -686,7 +722,6 @@
       });
 
       const historyContainer = document.getElementById("history-list");
-      const historyObj = userData[currentUser]?.history || {};
       const historyKeys = Object.keys(historyObj).sort().reverse();
 
       let totalGained = 0;
