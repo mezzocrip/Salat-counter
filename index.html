@@ -189,7 +189,10 @@
       <!-- Liste des prières -->
       <div class="bg-slate-800/80 backdrop-blur border border-slate-700/60 p-5 rounded-2xl shadow-xl">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-bold text-slate-100">Prières du jour</h2>
+          <div>
+            <h2 class="text-lg font-bold text-slate-100">Prières du jour</h2>
+            <p class="text-[11px] text-slate-400">1 prière minimum effectuée = 1 € dans la cagnotte</p>
+          </div>
           <span id="current-date" class="text-xs text-slate-400 bg-slate-700/50 px-2.5 py-1 rounded-md"></span>
         </div>
 
@@ -453,31 +456,43 @@
     window.togglePrayer = function(prayerId) {
       refreshDates();
       const userRefPath = `users/${currentUser}`;
-      const isChecked = !(userData[currentUser]?.currentDay?.[todayStr]?.[prayerId]);
+      const todayPrayers = userData[currentUser]?.currentDay?.[todayStr] || {};
+      
+      const isChecked = !todayPrayers[prayerId];
+      const countBefore = Object.values(todayPrayers).filter(Boolean).length;
+      const countAfter = isChecked ? countBefore + 1 : Math.max(0, countBefore - 1);
+      
       const currentBalance = userData[currentUser]?.balance || 0;
-      const newBalance = isChecked ? currentBalance + 1 : Math.max(0, currentBalance - 1);
+      let balanceChange = 0;
 
+      // Nouvelle règle : 1€ pour la journée dès qu'il y a 1 prière faite (pas de cumul par prière)
+      if (countBefore === 0 && countAfter >= 1) {
+        balanceChange = 1;
+      } else if (countBefore >= 1 && countAfter === 0) {
+        balanceChange = -1;
+      }
+
+      const newBalance = Math.max(0, currentBalance + balanceChange);
       const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      const prayerName = PRAYERS.find(p => p.id === prayerId).name;
 
       const updates = {};
       updates[`${userRefPath}/currentDay/${todayStr}/${prayerId}`] = isChecked;
       updates[`${userRefPath}/balance`] = newBalance;
       
-      if (isChecked) {
+      if (balanceChange > 0) {
         const historyKey = Date.now();
         updates[`${userRefPath}/history/${historyKey}`] = {
-          text: `${todayStr} à ${timestamp} : ${prayerName} (+1€)`,
+          text: `${todayStr} à ${timestamp} : Objectif prières (+1€)`,
           date: todayStr,
           type: 'gain',
-          prayerId: prayerId,
+          prayerDay: todayStr,
           amount: 1
         };
-      } else {
+      } else if (balanceChange < 0) {
         const historyObj = userData[currentUser]?.history || {};
         Object.keys(historyObj).forEach(key => {
           const item = historyObj[key];
-          if (typeof item === 'object' && item.date === todayStr && item.prayerId === prayerId) {
+          if (typeof item === 'object' && item.date === todayStr && item.prayerDay === todayStr) {
             updates[`${userRefPath}/history/${key}`] = null;
           }
         });
@@ -693,7 +708,6 @@
             <span class="font-semibold text-base">${p.name}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-semibold ${done ? 'text-emerald-400' : 'text-slate-500'}">+1 €</span>
             <div class="w-6 h-6 rounded-lg border flex items-center justify-center ${
               done ? 'bg-emerald-500 border-emerald-400 text-slate-900' : 'border-slate-600 bg-slate-800'
             }">
@@ -704,9 +718,10 @@
         prayersContainer.appendChild(card);
       });
 
+      const todayGained = count >= 1 ? 1 : 0;
       const percent = (count / 5) * 100;
       document.getElementById("progress-bar").style.width = `${percent}%`;
-      document.getElementById("progress-text").textContent = `${count}/5 (${count}€)`;
+      document.getElementById("progress-text").textContent = `${count}/5 (${todayGained}€ gagné aujourd'hui)`;
 
       // Calendrier mensuel
       renderMonthlyCalendar();
